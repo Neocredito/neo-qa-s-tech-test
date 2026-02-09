@@ -49,7 +49,7 @@ Você atuará como QA responsável por garantir a qualidade de uma aplicação *
 ```bash
 cd backend
 npm install
-npm run start:dev
+npm run start
 ```
 Backend disponível em: `http://localhost:3333`
 
@@ -272,7 +272,7 @@ Se optar por não fazer automação, foque em respostas detalhadas e bem justifi
 
 ## 📦 Entrega
 
-1. Faça um **fork** deste repositório: [https://github.com/Neocredito/neo-qa-engineer-challenge](https://github.com/Neocredito/neo-qa-engineer-challenge)
+1. Faça um **fork** deste repositório: [https://github.com/Neocredito/neo-qa-engineer-challenge](https://github.com/Neocredito/neo-qa-s-tech-test)
 2. Crie uma branch com seu nome: `seu-nome-sobrenome`
 3. Adicione seus arquivos:
    - `PLANO_DE_TESTES.md` (ou adicione no README)
@@ -318,9 +318,9 @@ neo-test/
 
 Em caso de dúvidas sobre o desafio, entre em contato via LinkedIn:
 
-- [Heverton Costa](https://www.linkedin.com/in/heverton-costa/)
-- [Handryos Ghidorsi dos Santos](https://www.linkedin.com/in/handryos-ghidorsi-dos-santos-421b00258/)
+- [Daniela Vieira](https://www.linkedin.com/in/daniellavieira/)
 - [Danilo Gomes Ferraz](https://www.linkedin.com/in/udaanilo/)
+- [Handryos Ghidorsi dos Santos](https://www.linkedin.com/in/handryos-ghidorsi-dos-santos-421b00258/)
 
 ---
 
