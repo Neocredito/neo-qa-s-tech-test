@@ -98,7 +98,7 @@ export class Proposal {
   }
 
   getDocumentUrl(): string | undefined {
-    return this.comprovanteUrl;
+    return this.documentUrl;
   }
 
   getCreatedAt(): Date {
