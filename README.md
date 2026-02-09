@@ -272,7 +272,7 @@ Se optar por não fazer automação, foque em respostas detalhadas e bem justifi
 
 ## 📦 Entrega
 
-1. Faça um **fork** deste repositório: [https://github.com/Neocredito/neo-qa-engineer-challenge](https://github.com/Neocredito/neo-qa-engineer-challenge)
+1. Faça um **fork** deste repositório: [https://github.com/Neocredito/neo-qa-engineer-challenge](https://github.com/Neocredito/neo-qa-s-tech-test)
 2. Crie uma branch com seu nome: `seu-nome-sobrenome`
 3. Adicione seus arquivos:
    - `PLANO_DE_TESTES.md` (ou adicione no README)
