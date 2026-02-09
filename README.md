@@ -49,7 +49,7 @@ Você atuará como QA responsável por garantir a qualidade de uma aplicação *
 ```bash
 cd backend
 npm install
-npm run start:dev
+npm run start
 ```
 Backend disponível em: `http://localhost:3333`
 
