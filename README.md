@@ -318,9 +318,9 @@ neo-test/
 
 Em caso de dúvidas sobre o desafio, entre em contato via LinkedIn:
 
-- [Heverton Costa](https://www.linkedin.com/in/heverton-costa/)
-- [Handryos Ghidorsi dos Santos](https://www.linkedin.com/in/handryos-ghidorsi-dos-santos-421b00258/)
+- [Daniela Vieira](https://www.linkedin.com/in/daniellavieira/)
 - [Danilo Gomes Ferraz](https://www.linkedin.com/in/udaanilo/)
+- [Handryos Ghidorsi dos Santos](https://www.linkedin.com/in/handryos-ghidorsi-dos-santos-421b00258/)
 
 ---
 
