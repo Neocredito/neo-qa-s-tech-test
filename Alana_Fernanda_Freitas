@@ -1,0 +1,328 @@
+# Plano de Testes BDD
+
+Este documento detalha os cenários de teste para a aplicação, empregando a metodologia **BDD (Behavior Driven Development)**. O escopo abrange o fluxo principal (caminho feliz), validações de entrada, regras de negócio e cenários de erro, todos alinhados aos requisitos do projeto.
+
+## 1. Objetivo
+
+O objetivo deste plano é garantir a qualidade e a conformidade da aplicação através da validação dos seguintes aspectos:
+
+*   Criação de propostas
+*   Validação de CPF
+*   Validação de idade
+*   Controle de status da proposta
+*   Upload de comprovantes
+*   Restrições de edição de propostas
+
+## 2. Regras de Negócio Validadas
+
+As seguintes regras de negócio são cruciais para o funcionamento correto do sistema e são validadas exaustivamente:
+
+*   O CPF deve ser validado por um algoritmo completo, garantindo a autenticidade do documento.
+*   A idade mínima para cadastro de propostas é de 18 anos.
+*   O status inicial de toda proposta criada é **AGUARDANDO_COMPROVANTE**.
+*   Não é permitido definir o status da proposta durante sua criação.
+*   Propostas que já foram concluídas não podem ser editadas.
+*   O upload bem-sucedido de um comprovante altera automaticamente o status da proposta para **CONCLUÍDO**.
+
+## 3. Requisitos do Sistema
+
+### 3.1 Requisitos Funcionais (RF)
+
+| Código | Requisito |
+| :----- | :------------------------------------------------------------------------------------------------------- |
+| RF001  | O sistema deve permitir o cadastro de uma nova proposta com os dados pessoais do usuário. |
+| RF002  | O sistema deve validar o CPF informado utilizando o algoritmo completo. |
+| RF003  | O sistema deve permitir o cadastro apenas de usuários com idade igual ou superior a 18 anos. |
+| RF004  | O sistema deve atribuir automaticamente o status **AGUARDANDO_COMPROVANTE** ao criar uma proposta. |
+| RF005  | O sistema deve aceitar arquivos PDF, JPG ou PNG para o upload de comprovantes. |
+| RF006  | O sistema deve processar o comprovante e atualizar o status da proposta após o envio. |
+| RF007  | Após o upload bem-sucedido do comprovante, o status da proposta deve ser alterado automaticamente para **CONCLUÍDA**.
+| RF008  | O sistema deve permitir a edição apenas de propostas que não estejam concluídas. |
+| RF009  | O sistema deve exibir as propostas listadas e separadas por status. |
+| RF010  | O sistema deve permitir filtrar propostas por nome ou CPF. |
+
+### 3.2 Regras de Negócio (RN)
+
+| Código | Regra |
+| :----- | :------------------------------------------------------------- |
+| RN001  | O CPF deve ser validado pelo algoritmo completo. |
+| RN002  | Idade mínima de 18 anos. |
+| RN003  | O status inicial é sempre **AGUARDANDO_COMPROVANTE**.
+| RN004  | Propostas concluídas não podem ser editadas. |
+| RN005  | O upload válido altera o status automaticamente para **CONCLUÍDA**.
+
+### 3.3 Requisitos Não Funcionais (RNF)
+
+| Código | Requisito |
+| :----- | :----------------------------------------------- |
+| RNF001 | Validação de tipo e tamanho de arquivo no upload. |
+
+## 4. Priorização de Testes
+
+### Critérios de Prioridade
+
+| Nível | Descrição |
+| :------ | :--------------------------------------------- |
+| Smoke | Fluxos essenciais que bloqueiam o uso do sistema. |
+| Crítico | Alto impacto no negócio. |
+| Médio | Impacto moderado. |
+| Baixo | Melhoria de qualidade. |
+
+### Classificação dos Casos de Teste
+
+| Caso de Teste | Prioridade | Justificativa |
+| :------------ | :--------- | :------------------------------ |
+| CT001 | Smoke | Fluxo principal do sistema. |
+| CT002 | Crítico | Validação essencial de negócio. |
+| CT003 | Crítico | Regra legal. |
+| CT004 | Crítico | Integridade do fluxo. |
+| CT005 | Smoke | Conclusão do processo. |
+| CT006 | Médio | Validação de entrada. |
+| CT007 | Médio | Funcionalidade secundária. |
+| CT008 | Crítico | Integridade dos dados. |
+| CT009 | Médio | Usabilidade. |
+| CT010 | Baixo | Qualidade da experiência. |
+
+## 5. Análise de Riscos
+
+### Áreas de Maior Risco
+
+*   **Validação de CPF:** Uma falha pode gerar dados inválidos, impactando diretamente o negócio.
+*   **Mudança automática de status após upload:** Falhas neste processo podem quebrar o fluxo principal e levar a inconsistências de dados.
+*   **Bloqueio de edição após conclusão:** A falha nesta restrição comprometeria a integridade das propostas.
+*   **Processamento assíncrono (fila RabbitMQ simulada):** Existe o risco de falhas silenciosas, resultando em estados inconsistentes da proposta.
+
+### Impactos Possíveis
+
+*   Dados inconsistentes no sistema.
+*   Fraudes ou cadastros inválidos.
+*   Interrupção do fluxo do usuário.
+*   Propostas em estado incorreto ou indevido.
+
+## 6. Casos de Teste
+
+### Cadastro de Proposta
+
+**CT001 — Cadastro de proposta com dados válidos**
+
+*   **Requisitos cobertos:** RF001, RF002, RF003, RF004, RN001, RN002, RN003
+*   **Prioridade:** Smoke
+*   **Pré-condições:**
+    *   O usuário acessa a tela de cadastro.
+    *   Não existe proposta com o CPF informado.
+*   **Dados de teste:** CPF válido, idade ≥ 18 anos, campos obrigatórios preenchidos.
+
+Dado que o usuário está na tela de cadastro de proposta
+E informa dados válidos incluindo CPF válido e idade ≥ 18 anos
+Quando confirma o cadastro
+Então o sistema deve criar a proposta com sucesso
+E exibir mensagem de confirmação
+E o status da proposta deve ser AGUARDANDO_COMPROVANTE
+E a proposta deve ser persistida no sistema
+E aparecer na listagem de propostas aguardando comprovante
+```
+
+**CT002 — Impedir cadastro com CPF inválido**
+
+*   **Requisitos cobertos:** RF002, RN001
+*   **Prioridade:** Crítico
+*   **Pré-condições:** O usuário acessa a tela de cadastro.
+
+Dado que o usuário informa um CPF inválido
+Quando tenta concluir o cadastro
+Então o sistema não deve criar a proposta
+E exibir mensagem informando CPF inválido
+E os dados não devem ser persistidos
+```
+
+**CT003 — Impedir cadastro para menor de idade**
+
+*   **Requisitos cobertos:** RF003, RN002
+*   **Prioridade:** Crítico
+*   **Pré-condições:** O usuário acessa a tela de cadastro.
+
+Dado que o usuário informa data de nascimento que indica idade < 18 anos
+Quando tenta concluir o cadastro
+Então o sistema deve impedir o cadastro
+E exibir mensagem informando idade mínima não atendida
+E nenhuma proposta deve ser registrada
+```
+
+**CT004 — Garantir status inicial fixo**
+
+*   **Requisitos cobertos:** RF004, RN003
+*   **Prioridade:** Crítico
+
+Dado que o usuário preenche todos os dados válidos
+Quando cria a proposta
+Então o status deve ser AGUARDANDO_COMPROVANTE
+E não deve permitir definir outro status na criação
+```
+
+### Upload de Comprovante
+
+**CT005 — Upload válido**
+
+*   **Requisitos cobertos:** RF005, RF006, RF007, RN005, RNF001
+*   **Prioridade:** Smoke
+*   **Pré-condições:** Proposta com status AGUARDANDO_COMPROVANTE.
+
+Dado que existe uma proposta com status AGUARDANDO_COMPROVANTE
+Quando o usuário envia arquivo válido (PDF, JPG ou PNG)
+Então o sistema aceita o upload
+E processa o arquivo com sucesso
+E altera status para CONCLUÍDA
+E a proposta aparece na listagem de propostas concluídas
+```
+
+**CT006 — Upload inválido**
+
+*   **Requisitos cobertos:** RF005, RNF001
+*   **Prioridade:** Médio
+*   **Pré-condições:** Existe proposta aguardando comprovante.
+
+Dado que existe proposta aguardando comprovante
+Quando o usuário envia arquivo em formato não permitido
+Então o sistema rejeita o upload
+E exibe mensagem informando formato inválido
+E o status permanece inalterado
+```
+
+### Edição de Proposta
+
+**CT007 — Editar proposta não concluída**
+
+*   **Requisitos cobertos:** RF008
+*   **Prioridade:** Médio
+*   **Pré-condições:** Proposta não concluída.
+
+Dado que existe uma proposta não concluída
+Quando o usuário altera os dados da proposta
+Então o sistema permite a edição
+E salva as alterações realizadas
+E os dados atualizados são exibidos
+```
+
+**CT008 — Bloquear edição de proposta concluída**
+
+*   **Requisitos cobertos:** RF008, RN004
+*   **Prioridade:** Crítico
+*   **Pré-condições:** Proposta concluída.
+
+Dado que existe uma proposta com status CONCLUÍDA
+Quando o usuário tenta editar
+Então o sistema impede a edição
+E mantém os dados originais
+E informa que propostas concluídas são somente leitura
+```
+
+### Listagem e Filtros
+
+**CT009 — Listar propostas por status**
+
+*   **Requisitos cobertos:** RF009
+*   **Prioridade:** Médio
+*   **Pré-condições:** Existem propostas com status AGUARDANDO_COMPROVANTE e CONCLUÍDA.
+
+Dado que existem propostas com status AGUARDANDO_COMPROVANTE e CONCLUÍDA
+Quando o usuário acessa a listagem
+Então o sistema exibe propostas separadas por status
+E cada proposta aparece na categoria correta
+```
+
+**CT010 — Filtrar propostas por CPF ou nome**
+
+*   **Requisitos cobertos:** RF010
+*   **Prioridade:** Baixo
+
+Dado que existem propostas cadastradas
+Quando o usuário aplica filtro por CPF ou nome
+Então o sistema exibe apenas propostas correspondentes
+E as demais não são exibidas
+```
+
+### Integração / Fluxo Completo
+
+**CT011 — Fluxo completo da proposta**
+
+*   **Requisitos cobertos:** RF001, RF004, RF005, RF007, RF008, RN003, RN004, RN005
+*   **Prioridade:** Smoke
+
+Dado que o usuário cadastra uma proposta com dados válidos
+E a proposta é criada com status AGUARDANDO_COMPROVANTE
+Quando o usuário envia comprovante válido
+Então o status muda para CONCLUÍDA
+E a proposta fica bloqueada para edição
+E aparece na listagem de propostas concluídas
+```
+
+### Casos de Borda
+
+
+Casos de Borda 
+EC001 — Cadastro com CPF com máscara ou sem máscara
+Dado que o usuário informa CPF com formatação ou sem formatação
+Quando realiza o cadastro
+Então o sistema deve validar corretamente o CPF
+E o comportamento deve ser equivalente nos dois casos
+
+
+EC002 — Upload de arquivo acima do limite permitido
+Dado que existe proposta aguardando comprovante
+Quando o usuário envia arquivo acima do limite de tamanho permitido
+Então o sistema deve rejeitar o upload
+E deve informar que o tamanho excede o limite permitido
+
+
+EC003 — Filtro sem resultados
+Dado que não existem propostas correspondentes ao filtro informado
+Quando o usuário aplica o filtro
+Então o sistema deve exibir mensagem informando que não há resultados
+
+
+EC004 — Sistema sem propostas cadastradas
+Dado que não existem propostas cadastradas
+Quando o usuário acessa a listagem
+Então o sistema deve exibir estado vazio
+E deve informar que não existem propostas
+
+
+| Código | Cenário |
+| :----- | :------------------------------------------ |
+| EC001  | Cadastro com CPF com máscara ou sem máscara. |
+| EC002  | Upload de arquivo acima do limite permitido. |
+| EC003  | Filtro sem resultados. |
+| EC004  | Sistema sem propostas cadastradas. |
+
+## 7. Matriz de Rastreabilidade
+
+### Requisitos Funcionais (RF)
+
+| Requisito | Casos de Teste |
+| :-------- | :------------------- |
+| RF001 | CT001, CT011 |
+| RF002 | CT001, CT002 |
+| RF003 | CT001, CT003 |
+| RF004 | CT001, CT004, CT011 |
+| RF005 | CT005, CT006, CT011 |
+| RF006 | CT005 |
+| RF007 | CT005, CT011 |
+| RF008 | CT007, CT008, CT011 |
+| RF009 | CT009, CT011 |
+| RF010 | CT010 |
+
+### Regras de Negócio (RN)
+
+| Requisito | Casos de Teste |
+| :-------- | :------------------- |
+| RN001 | CT001, CT002, EC001 |
+| RN002 | CT001, CT003 |
+| RN003 | CT001, CT004, CT011 |
+| RN004 | CT008, CT011 |
+| RN005 | CT005, CT011 |
+
+### Requisitos Não Funcionais (RNF)
+
+| Requisito | Casos de Teste |
+| :-------- | :------------------- |
+| RNF001 | CT005, CT006, EC002 |
